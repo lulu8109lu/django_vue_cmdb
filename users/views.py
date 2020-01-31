@@ -1,9 +1,7 @@
-from django.shortcuts import render
 from django.http import JsonResponse
-from django.views import View
-from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.authtoken.models import Token
 from users.utils import get_cookie
 import json
 import uuid
@@ -29,12 +27,23 @@ def auth(request, version):
             password = raw_data.get('password')
             user = authenticate(username=username, password=password)
             if user:
-                result['data']['username'] = username
-                result['data']['password'] = password
-                result['data']['name'] = username
-                result['data']['token'] = get_cookie(username)
-                result['data']['uuid'] = str(uuid.uuid4())
+                rand_token = get_cookie(username)
+                data = {
+                    'username': username,
+                    'password': password,
+                    'name': username,
+                    'token': rand_token,
+                    'uuid': str(uuid.uuid4())
+                }
+                result['data'] = data
+                # 更新django登录状态
                 login(request, user)
+                # 保存最新token到数据库
+                token_obj = Token.objects.filter(user=user)
+                if token_obj:
+                    token_obj.update(**{'key': rand_token})
+                else:
+                    Token.objects.create(user=user, key=rand_token)
             else:
                 result = {
                     'code': 401,

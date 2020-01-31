@@ -37,7 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'users',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -113,7 +125,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -153,3 +165,7 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+
+SESSION_COOKIE_AGE = 60 * 120    # 过期时间
+SESSION_SAVE_EVERY_REQUEST = True  # 每次操作更新session过期时间
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 关闭浏览器清空session
