@@ -1,0 +1,17 @@
+<template>
+  <d2-container>
+    <template slot="header">主机初始化</template>
+    Hello World
+    <template slot="footer">footer</template>
+  </d2-container>
+</template>
+
+<script>
+  export default {
+    name: "Initialize"
+  }
+</script>
+
+<style scoped>
+
+</style>
