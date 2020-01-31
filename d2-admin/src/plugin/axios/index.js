@@ -46,7 +46,6 @@ service.interceptors.request.use(
     // const token = util.cookies.get('token')
     let cookie = document.cookie
     // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-    console.log(cookie)
     config.headers['X-Token'] = cookie
     return config
   },
