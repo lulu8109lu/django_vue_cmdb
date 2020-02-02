@@ -51,7 +51,7 @@
                   <el-input
                     type="text"
                     v-model="formLogin.code"
-                    placeholder="验证码">
+                    placeholder="验证码" @keypress.native="enterSubmit($event)">
                     <template slot="append">
                       <img class="login-code" :src="captchaImage" @click="refreshCaptcha()">
                     </template>
@@ -196,6 +196,12 @@
           }
         })
       },
+      enterSubmit(event) {
+        if (event.keyCode === 13) {
+          // console.log(13)
+          this.submit()
+        }
+      }
     }
   }
 </script>

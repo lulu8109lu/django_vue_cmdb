@@ -31,7 +31,7 @@ def user_login(request, version):
             raw_data = json.loads(request.body.decode('utf-8'))
             username = raw_data.get('username')
             password = raw_data.get('password')
-            captcha = raw_data.get('code')
+            captcha = raw_data.get('code').lower()
             image_uuid = raw_data.get('image_uuid')
             # 判断验证码
             captcha_redis = cache.get(image_uuid)

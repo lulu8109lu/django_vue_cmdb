@@ -5,7 +5,7 @@ import time
 import random
 
 
-def get_cookie(username: str):
+def get_cookie(username):
     """
     使用sha1加密算法，返回username/当前时间戳/随机数加密后的字符串
     """
@@ -19,6 +19,9 @@ def get_cookie(username: str):
 
 
 def get_captcha():
+    """
+    生成随机验证码及其图片
+    """
     char_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
                  'u', 'v', 'w', 'x', 'y', 'z',
@@ -26,6 +29,6 @@ def get_captcha():
                  'U', 'V', 'W', 'X', 'Y', 'Z']
     chars = ''
     for i in range(4):
-        chars += char_list[randint(0, 62)]
+        chars += char_list[randint(0, 61)]
     image = ImageCaptcha().generate_image(chars)
     return chars, image
