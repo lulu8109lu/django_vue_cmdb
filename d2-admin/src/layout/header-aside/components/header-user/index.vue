@@ -27,7 +27,8 @@ export default {
      */
     logOff () {
       this.logout({
-        confirm: true
+        confirm: true,
+        username: this.info.name,
       })
     }
   }

@@ -89,6 +89,7 @@ service.interceptors.response.use(
       switch (error.response.status) {
         case 400: error.message = '请求错误'; break
         case 401: error.message = '未授权，请登录'; break
+        case 402: error.message = '验证码错误'; break
         case 403: error.message = '拒绝访问'; break
         case 404: error.message = `请求地址出错: ${error.response.config.url}`; break
         case 408: error.message = '请求超时'; break

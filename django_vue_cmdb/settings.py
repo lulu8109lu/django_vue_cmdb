@@ -166,6 +166,17 @@ CORS_ALLOW_HEADERS = (
     'Pragma',
 )
 
-SESSION_COOKIE_AGE = 60 * 120    # 过期时间
+SESSION_COOKIE_AGE = 60 * 120  # 过期时间
 SESSION_SAVE_EVERY_REQUEST = True  # 每次操作更新session过期时间
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 关闭浏览器清空session
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/2',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "Redis@123"
+        },
+    },
+}
