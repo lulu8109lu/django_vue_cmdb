@@ -187,6 +187,7 @@
               .catch(() => {
                 // 刷新验证码
                 this.refreshCaptcha()
+                this.formLogin.code = ''
               })
           } else {
             // 刷新验证码

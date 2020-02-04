@@ -6,6 +6,10 @@ import App from './App'
 import d2Admin from '@/plugin/d2admin'
 // store
 import store from '@/store/index'
+// d2-crud表格插件
+import D2Crud from '@d2-projects/d2-crud'
+Vue.use(D2Crud)
+
 
 // 菜单和路由设置
 import router from './router'
