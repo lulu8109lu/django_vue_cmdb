@@ -24,8 +24,8 @@
         @row-add="handleRowAdd"
         @row-edit="handleRowEdit"
         @dialog-cancel="handleDialogCancel">
-        <el-button type="success" slot="header" style="margin-bottom: 5px" @click="addRow">新增</el-button>
-        <el-button type="danger" slot="header" style="margin-bottom: 5px" @click="delRow">删除</el-button>
+        <el-button type="success" slot="header" size="small" style="margin-bottom: 5px" @click="addRow">新增</el-button>
+        <el-button type="danger" slot="header" size="small" style="margin-bottom: 5px" @click="delRow">删除</el-button>
       </d2-crud>
     </div>
   </d2-container>
@@ -34,6 +34,7 @@
 <script>
   import request from '@/plugin/axios'
   import SERVER from '@/server'
+  import {Message, MessageBox} from 'element-ui'
 
   export default {
     name: "areaList",
@@ -44,7 +45,7 @@
         options: {
           stripe: true,   // 斑马纹
           border: true,    // 边框
-          maxHeight: '350',   // 最大高度，超过显示滚动条
+          maxHeight: '300',   // 最大高度，超过显示滚动条
           emptyText: '',     // 数据空白时显示内容
         },
         formRules: {    // 模态框中的表单填写规则
@@ -55,7 +56,7 @@
           edit: {           // 编辑数据按钮
             icon: 'el-icon-edit',
             text: '修改',
-            size: 'small',
+            size: 'mini',
             fixed: 'right',
             type: 'primary'
           }
@@ -84,7 +85,7 @@
         },
         pagination: {   // 分页设置
           currentPage: 1,
-          pageSize: 10,
+          pageSize: 5,
           total: 100,
           prevText: '上一页',
           nextText: '下一页'
@@ -179,10 +180,10 @@
               message: '保存成功',
               type: 'success'
             });
+            // 重新请求表格数据
+            this.listArea()
             // done可以传入一个对象来修改提交的某个字段
-            done(
-              this.listArea()
-            )
+            done()
             this.formOptions.saveLoading = false
           }, 300)
         })
@@ -204,8 +205,8 @@
         this.pagination.currentPage = currentPage
         this.listArea()
       },
-      // 删除请求函数
-      delRow() {
+      // 删除请求
+      delRequest() {
         this.loading = true
         let data = {
           selectData: this.selectData,
@@ -230,6 +231,30 @@
           .catch(err => {
             this.loading = false
             console.log('err: ', err)
+          })
+      },
+      // 删除确认函数
+      delRow() {
+        // 先判断是否有选中数据
+        if (!this.selectData) {
+          this.$message({
+            message: '请先选择要删除的项目',
+            type: 'warning'
+          })
+          return
+        }
+        // 开始确认
+        MessageBox.confirm('确定要删除吗', '删除', {
+          type: 'warning'
+        })
+          .then(() => {
+            this.delRequest()
+          })
+          .catch(() => {
+            this.$message({
+              message: '取消删除操作',
+              type: 'warning'
+            });
           })
       }
     },

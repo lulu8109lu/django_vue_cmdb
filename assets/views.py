@@ -25,7 +25,7 @@ class ListArea(APIView):
         try:
             raw_data = request.data
             current_page = raw_data.get('currentPage', 1)
-            page_size = raw_data.get('currentSize', 10)
+            page_size = raw_data.get('pageSize', 10)
             result['data']['columns'] = get_model_columns(Area)
             row_data = get_model_data(Area)
             total = len(row_data)
