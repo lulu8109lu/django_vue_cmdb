@@ -17,6 +17,7 @@
         :edit-template="addOrEditTemplate"
         :form-options="formOptions"
         :pagination="pagination"
+        @pagination-size-change="paginationSizeChange"
         :add-rules="formRules"
         :edit-rules="formRules"
         @pagination-current-change="paginationCurrentChange"
@@ -45,7 +46,7 @@
         options: {
           stripe: true,   // 斑马纹
           border: true,    // 边框
-          maxHeight: '300',   // 最大高度，超过显示滚动条
+          maxHeight: '320',   // 最大高度，超过显示滚动条
           emptyText: '',     // 数据空白时显示内容
         },
         formRules: {    // 模态框中的表单填写规则
@@ -88,7 +89,9 @@
           pageSize: 5,
           total: 100,
           prevText: '上一页',
-          nextText: '下一页'
+          nextText: '下一页',
+          pageSizes: [5, 10, 20, 30, 40, 50, 100],
+          layout: 'sizes, prev, pager, next, jumper, ->, total, slot'
         },
         loading: false,   // 默认loading样式
         selectData: ''
@@ -256,6 +259,11 @@
               type: 'warning'
             });
           })
+      },
+      // 分页选择器改变后触发的函数
+      paginationSizeChange(pageSize) {
+        this.pagination.pageSize = pageSize
+        this.listArea()
       }
     },
     mounted() {

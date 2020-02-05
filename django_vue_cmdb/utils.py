@@ -26,6 +26,8 @@ def get_model_columns(model):
     """
     columns = []
     for field in model._meta.fields:
+        if field.name == 'id':
+            continue
         field_info = {
             'title': field.verbose_name,
             'key': field.name,

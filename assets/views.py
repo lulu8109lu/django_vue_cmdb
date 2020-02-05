@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django_vue_cmdb.utils import get_model_data
 from django_vue_cmdb.utils import get_model_columns
 from assets.models import Area
-import json
+from django.db import IntegrityError
 
 
 class ListArea(APIView):
@@ -69,6 +69,12 @@ class AreaData(APIView):
                 area_obj.delete()
             else:
                 raise Exception('未知操作类型')
+        except IntegrityError:
+            result = {
+                'code': 500,
+                'msg': '已存在，请勿重复添加',
+                'data': {}
+            }
         except Exception as e:
             result = {
                 'code': 500,

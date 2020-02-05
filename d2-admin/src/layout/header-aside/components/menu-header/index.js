@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     ...mapState('d2admin/menu', [
-      'header'
+      'header',
     ])
   },
   data () {
