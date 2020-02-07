@@ -1,6 +1,24 @@
 <template>
   <d2-container>
     <template slot="header">地区表</template>
+    <el-form :inline="true" :model="tableFilter" class="demo-form-inline">
+      <el-form-item label="全局搜索">
+        <el-input v-model="tableFilter.wholeSearch" size="mini" placeholder="全局搜索"></el-input>
+      </el-form-item>
+      <el-form-item label="地区简称">
+        <el-select v-model="nameEnSelectValue" :loading="nameEnSelectLoading" size="mini"
+                   @click.native="getNameEnOptions" filterable clearable
+                   @change="nameEnSelectChange"
+                   placeholder="请选择地区简称">
+          <el-option
+            v-for="item in nameEnOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
     <div>
       <d2-crud
         ref="d2Crud"
@@ -38,9 +56,14 @@
   import {Message, MessageBox} from 'element-ui'
 
   export default {
-    name: "areaList",
+    name: "area",
     data() {
       return {
+        tableFilter: {   // 筛选表单字典数据
+          wholeSearch: '',  // 全局搜索
+        },
+        nameEnSelectValue: '',   // 英文简称筛选值
+        nameEnOptions: [],
         columns: [],  // 表头
         data: [],     // 数据
         options: {
@@ -93,23 +116,33 @@
           pageSizes: [5, 10, 20, 30, 40, 50, 100],
           layout: 'sizes, prev, pager, next, jumper, ->, total, slot'
         },
-        loading: false,   // 默认loading样式
-        selectData: ''
+        loading: false,   // 表格默认loading样式
+        nameEnSelectLoading: false,   // 英文简称选择框默认loading样式
+      }
+    },
+    watch: {
+      'tableFilter.wholeSearch': function (newVal) {
+        this.tableFilter.wholeSearch = newVal
+        this.listArea()
       }
     },
     methods: {
       // 表格数据勾选后触发的函数
       handleSelectionChange(selection) {
-        console.log(selection)
+        // console.log(selection)
         this.selectData = selection
       },
       // 请求表格数据
       listArea() {
         this.loading = true
+        let data = {
+          pagination: this.pagination,
+          tableFilter: this.tableFilter
+        }
         request({
           url: SERVER.server + '/assets/list_area/v1/',
           method: 'post',
-          data: this.pagination
+          data: data
         }).then(async res => {
           // console.log(res)
           this.loading = false
@@ -263,6 +296,28 @@
       // 分页选择器改变后触发的函数
       paginationSizeChange(pageSize) {
         this.pagination.pageSize = pageSize
+        this.listArea()
+      },
+      // 地区简称筛选框获得焦点时触发的函数
+      getNameEnOptions() {
+        this.nameEnSelectLoading = true
+        request({
+          url: SERVER.server + '/assets/list_name_en/v1/',
+          method: 'post',
+        }).then(async res => {
+          // console.log(res)
+          this.nameEnSelectLoading = false
+          this.nameEnOptions = res.list_name_en
+        })
+          .catch(err => {
+            this.nameEnSelectLoading = false
+            console.log('err: ', err)
+          })
+      },
+      // 英文简称选择框选择值改变时触发的函数
+      nameEnSelectChange(newVal) {
+        // console.log(newVal)
+        this.tableFilter.nameEnSelect = newVal
         this.listArea()
       }
     },

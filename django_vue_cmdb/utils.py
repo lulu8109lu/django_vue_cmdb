@@ -37,7 +37,7 @@ def get_model_columns(model):
     return columns
 
 
-def get_model_data(model):
+def get_model_data(model, sub_query=None):
     """
     生成表格数据
     格式：
@@ -64,7 +64,10 @@ def get_model_data(model):
         }
     ]
     """
-    data_list = serializers.serialize("json", model.objects.all())
+    if sub_query:
+        data_list = serializers.serialize("json", model.objects.filter(sub_query))
+    else:
+        data_list = serializers.serialize("json", model.objects.all())
     fields_data = [dict(data['fields'], **{'id': data['pk']}) for data in json.loads(data_list)]
     fields_data.sort(key=lambda x: int(x['id']), reverse=False)
     return fields_data

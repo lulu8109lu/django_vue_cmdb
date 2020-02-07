@@ -6,6 +6,7 @@ from django_vue_cmdb.utils import get_model_data
 from django_vue_cmdb.utils import get_model_columns
 from assets.models import Area
 from django.db import IntegrityError
+from django.db.models import Q
 
 
 class ListArea(APIView):
@@ -24,14 +25,34 @@ class ListArea(APIView):
         }
         try:
             raw_data = request.data
-            current_page = raw_data.get('currentPage', 1)
-            page_size = raw_data.get('pageSize', 10)
+            pagination = raw_data.get('pagination', {})
+            current_page = pagination.get('currentPage', 1)
+            page_size = pagination.get('pageSize', 10)
+            table_filter = raw_data.get('tableFilter', {})
+            whole_search = table_filter.get('wholeSearch', '')
+            name_en_select = table_filter.get('nameEnSelect', '')
+
+            # 拼接筛选条件
+            sub_query_and = Q()
+            sub_query_or = Q()
+            if whole_search:
+                sub_query_or.add(Q(name_cn__icontains=whole_search), Q.OR)
+                sub_query_or.add(Q(name_en__icontains=whole_search), Q.OR)
+            if name_en_select:
+                sub_query_and.add(Q(name_en__icontains=name_en_select), Q.AND)
+            sub_query = sub_query_and & sub_query_or
+
+            # 获取表头
             result['data']['columns'] = get_model_columns(Area)
-            row_data = get_model_data(Area)
+            # 获取所有数据行
+            row_data = get_model_data(Area, sub_query)
             total = len(row_data)
+            result['data']['total'] = total
+
+            # 分页
             row_data = row_data[(current_page - 1) * page_size:current_page * page_size]
             result['data']['row_data'] = row_data
-            result['data']['total'] = total
+
         except Exception as e:
             result = {
                 'code': 500,
@@ -75,6 +96,30 @@ class AreaData(APIView):
                 'msg': '已存在，请勿重复添加',
                 'data': {}
             }
+        except Exception as e:
+            result = {
+                'code': 500,
+                'msg': str(e),
+                'data': {}
+            }
+        finally:
+            return JsonResponse(result)
+
+
+class ListNameEn(APIView):
+    """列出地区英文简称"""
+    authentication_classes = (ExpireTokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, version):
+        result = {
+            'code': 0,
+            'msg': '修改成功',
+            'data': {}
+        }
+        try:
+            list_name_en = [{'label': data['name_en'], 'value': data['name_en']} for data in list(Area.objects.values('name_en').distinct())]
+            result['data']['list_name_en'] = list_name_en
         except Exception as e:
             result = {
                 'code': 500,
