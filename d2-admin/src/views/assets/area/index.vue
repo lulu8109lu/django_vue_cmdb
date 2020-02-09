@@ -56,7 +56,7 @@
   import {Message, MessageBox} from 'element-ui'
 
   export default {
-    name: "area",
+    name: "Area",
     data() {
       return {
         tableFilter: {   // 筛选表单字典数据

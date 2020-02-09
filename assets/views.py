@@ -24,6 +24,10 @@ class ListArea(APIView):
             }
         }
         try:
+            # 校验操作权限
+            if not request.user.has_perm('assets.view_area'):
+                raise PermissionError
+
             raw_data = request.data
             pagination = raw_data.get('pagination', {})
             current_page = pagination.get('currentPage', 1)
@@ -53,6 +57,12 @@ class ListArea(APIView):
             row_data = row_data[(current_page - 1) * page_size:current_page * page_size]
             result['data']['row_data'] = row_data
 
+        except PermissionError:
+            result = {
+                'code': 403,
+                'msg': '权限受限',
+                'data': {}
+            }
         except Exception as e:
             result = {
                 'code': 500,
@@ -78,12 +88,21 @@ class AreaData(APIView):
             raw_data = request.data
             action = raw_data.pop('action', None)
             if action == 'edit':
+                # 校验操作权限
+                if not request.user.has_perm('assets.change_area'):
+                    raise PermissionError
                 area_id = raw_data.pop('id')
                 area_obj = Area.objects.filter(pk=area_id)
                 area_obj.update(**raw_data)
             elif action == 'add':
+                # 校验操作权限
+                if not request.user.has_perm('assets.add_area'):
+                    raise PermissionError
                 Area.objects.create(**raw_data)
             elif action == 'delete':
+                # 校验操作权限
+                if not request.user.has_perm('assets.delete_area'):
+                    raise PermissionError
                 select_data = raw_data.get('selectData', [])
                 delete_area_id = [data['id'] for data in select_data]
                 area_obj = Area.objects.filter(id__in=delete_area_id)
@@ -96,6 +115,12 @@ class AreaData(APIView):
                 'msg': '已存在，请勿重复添加',
                 'data': {}
             }
+        except PermissionError:
+            result = {
+                'code': 403,
+                'msg': '权限受限',
+                'data': {}
+        }
         except Exception as e:
             result = {
                 'code': 500,
@@ -118,8 +143,18 @@ class ListNameEn(APIView):
             'data': {}
         }
         try:
+            # 校验操作权限
+            if not request.user.has_perm('assets.view_area'):
+                raise PermissionError
+
             list_name_en = [{'label': data['name_en'], 'value': data['name_en']} for data in list(Area.objects.values('name_en').distinct())]
             result['data']['list_name_en'] = list_name_en
+        except PermissionError:
+            result = {
+                'code': 403,
+                'msg': '权限受限',
+                'data': {}
+            }
         except Exception as e:
             result = {
                 'code': 500,

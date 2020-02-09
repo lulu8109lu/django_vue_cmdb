@@ -36,6 +36,8 @@ export default {
             // 如有必要 token 需要定时更新，默认保存一天
             util.cookies.set('uuid', res.uuid)
             util.cookies.set('token', res.token)
+            // 设置侧边栏菜单
+
             // 设置 vuex 用户信息
             await dispatch('d2admin/user/set', {
               name: res.name

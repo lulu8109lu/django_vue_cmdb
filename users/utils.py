@@ -32,3 +32,22 @@ def get_captcha():
         chars += char_list[randint(0, 61)]
     image = ImageCaptcha().generate_image(chars)
     return chars, image
+
+
+def get_user_menu(user):
+    """获取用户有权限访问的菜单"""
+    # 获取用户所有权限
+    user_permissions = [user_perm for user_perm in user.user_permissions.all()]
+    group_permission = []
+    for group in user.groups.all():
+        group_permission.extend([group_perm for group_perm in group.permissions.all()])
+    all_permissions = user_permissions + group_permission
+    # 筛选出带menu的权限，标识进入菜单的权限
+    menu_perms = [perm for perm in all_permissions if 'menu' in perm.codename]
+    # 获取权限对应的菜单
+    menu_objs = []
+    for perm in menu_perms:
+        for menu in perm.usermenu_set.all():
+            menu_objs.append(menu)
+    print(menu_objs)
+

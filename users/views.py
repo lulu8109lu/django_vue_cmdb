@@ -47,7 +47,6 @@ def user_login(request, version):
                 rand_token = get_cookie(username)
                 data = {
                     'username': username,
-                    'password': password,
                     'name': username,
                     'token': rand_token,
                     'uuid': str(uuid.uuid4())
@@ -61,6 +60,8 @@ def user_login(request, version):
                     token_obj.update(**{'key': rand_token, 'created': datetime.datetime.now()})
                 else:
                     Token.objects.create(user=user, key=rand_token)
+                # 获取登录用户有权限访问的菜单
+                pass
             else:
                 result = {
                     'code': 401,
