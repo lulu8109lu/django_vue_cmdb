@@ -7,6 +7,7 @@ django-redis==4.11.0
 djangorestframework==3.11.0
 mysqlclient==1.4.6
 Pillow==7.0.0
+PyMySQL==0.9.3
 pytz==2019.3
 redis==3.4.0
 six==1.14.0
