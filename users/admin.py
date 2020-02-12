@@ -11,8 +11,9 @@ class PermissionAdmin(admin.ModelAdmin):
 
 
 class UserMenuAdmin(admin.ModelAdmin):
-    fields = ['path', 'title', 'icon', 'parent', 'permission']
-    list_display = ['path', 'title', 'icon', 'parent', 'permission']
+    fields = ['index', 'path', 'parent', 'title', 'icon', 'permission']
+    list_display = ['index', 'path', 'parent', 'title', 'icon', 'permission']
+    ordering = ('index',)
     list_per_page = 20
     search_fields = ('path', 'title')
     list_display_links = ('title',)

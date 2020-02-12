@@ -8,6 +8,7 @@ import d2Admin from '@/plugin/d2admin'
 import store from '@/store/index'
 // d2-crud表格插件
 import D2Crud from '@d2-projects/d2-crud'
+
 Vue.use(D2Crud)
 
 
@@ -15,7 +16,8 @@ Vue.use(D2Crud)
 import router from './router'
 import menuHeader from '@/menu/header'
 import menuAside from '@/menu/aside'
-import { frameInRoutes } from '@/router/routes'
+import {frameInRoutes} from '@/router/routes'
+import util from '@/libs/util.js'
 
 // 核心插件
 Vue.use(d2Admin)
@@ -25,19 +27,19 @@ new Vue({
   store,
   i18n,
   render: h => h(App),
-  created () {
+  created() {
     // 处理路由 得到每一级的路由设置
     this.$store.commit('d2admin/page/init', frameInRoutes)
     // 设置顶栏菜单
     this.$store.commit('d2admin/menu/headerSet', menuHeader)
-    // 设置侧边栏菜单
-    menuAside.push({path: '/index1', title: '首页1', icon: 'home'})
-    this.$store.commit('d2admin/menu/asideSet', menuAside)
+    // 设置侧边栏菜单，改为从后台获取
+    // this.$store.commit('d2admin/menu/asideSet', menuAside)
+    util.menu.init()
     // 初始化菜单搜索功能
-    this.$store.commit('d2admin/search/init', menuHeader)
+    // this.$store.commit('d2admin/search/init', menuHeader)
     this.$store.commit('d2admin/search/init', menuAside)
   },
-  mounted () {
+  mounted() {
     // 展示系统信息
     this.$store.commit('d2admin/releases/versionShow')
     // 用户登录后从数据库加载一系列的设置

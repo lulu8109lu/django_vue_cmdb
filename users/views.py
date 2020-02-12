@@ -5,9 +5,13 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from users.utils import get_cookie
 from users.utils import get_captcha
+from users.utils import get_user_menu
 from users.exceptions import *
 from django.core.cache import cache
 from io import BytesIO
+from django_vue_cmdb.expiring_token_authentication import ExpireTokenAuthentication
+from rest_framework import permissions
+from rest_framework.views import APIView
 import json
 import uuid
 import datetime
@@ -44,14 +48,8 @@ def user_login(request, version):
             # 验证账号密码
             user = authenticate(username=username, password=password)
             if user:
+                # 随机token
                 rand_token = get_cookie(username)
-                data = {
-                    'username': username,
-                    'name': username,
-                    'token': rand_token,
-                    'uuid': str(uuid.uuid4())
-                }
-                result['data'] = data
                 # 更新django登录状态
                 login(request, user)
                 # 保存最新token到数据库
@@ -61,7 +59,16 @@ def user_login(request, version):
                 else:
                     Token.objects.create(user=user, key=rand_token)
                 # 获取登录用户有权限访问的菜单
-                pass
+                menu = get_user_menu(user)
+
+                data = {
+                    'username': username,
+                    'name': username,
+                    'token': rand_token,
+                    'uuid': str(uuid.uuid4()),
+                    'menu': menu
+                }
+                result['data'] = data
             else:
                 result = {
                     'code': 401,
@@ -96,3 +103,31 @@ def user_captcha(request, image_uuid, version):
         except Exception as e:
             print(str(e))
         return HttpResponse(bf.getvalue(), content_type='image/png')
+
+
+class ListUserMenu(APIView):
+    """用户有权限访问的菜单数据"""
+    authentication_classes = (ExpireTokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, version):
+        result = {
+            'code': 0,
+            'msg': '请求成功',
+            'data': {
+                'menu': '',
+            }
+        }
+        try:
+            user = request.user
+            menu = get_user_menu(user)
+            result['data']['menu'] = menu
+
+        except Exception as e:
+            result = {
+                'code': 500,
+                'msg': str(e),
+                'data': {}
+            }
+        finally:
+            return JsonResponse(result)

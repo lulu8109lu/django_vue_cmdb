@@ -2,8 +2,12 @@ import { Message, MessageBox } from 'element-ui'
 import util from '@/libs/util.js'
 import router from '@/router'
 import { AccountLogin } from '@api/sys.login'
+import menuAside from '@/menu/aside'
+// store
+import store from '@/store/index'
 
 export default {
+  store,
   namespaced: true,
   actions: {
     /**
@@ -37,7 +41,14 @@ export default {
             util.cookies.set('uuid', res.uuid)
             util.cookies.set('token', res.token)
             // 设置侧边栏菜单
-
+            // permMenu是后台返回的登录用户拥有权限访问的菜单
+            // freeMenuAside是所有用户都有权限访问的菜单
+            let permMenu = res.menu
+            let freeMenuAside = menuAside
+            let allMenu = [...freeMenuAside, ...permMenu]
+            store.commit('d2admin/menu/asideSet', allMenu)
+            // 初始化菜单搜索功能
+            store.commit('d2admin/search/init', allMenu)
             // 设置 vuex 用户信息
             await dispatch('d2admin/user/set', {
               name: res.name
