@@ -2,8 +2,9 @@ import request from '@/plugin/axios'
 import SERVER from '@/server'
 import util from '@/libs/util.js'
 import store from '@/store/index'
-import {frameInRoutes, errorPage} from '@/router/routes'
+import {frameInRoutes} from '@/router/routes'
 import layoutHeaderAside from '@/layout/header-aside'
+import $ from 'jquery'
 
 const _import = require('@/libs/util.import.' + process.env.NODE_ENV)
 
@@ -22,16 +23,52 @@ const formatRoutes = function (routes) {
 routes.init = function (router) {
   const token = util.cookies.get('token')
   if (token && token !== 'undefined') {
-    return request({
+    // return request({
+    //   url: SERVER.server + '/users/list_user_router/v1/',
+    //   method: 'post',
+    // })
+    //   .then(res => {
+    //       // console.log(res.router)
+    //       let permRoutes = res.router
+    //       formatRoutes(permRoutes)
+    //       permRoutes = [
+    //         {
+    //           path: '/',
+    //           redirect: {name: 'index'},
+    //           component: layoutHeaderAside,
+    //           children: permRoutes
+    //         }
+    //       ]
+    //       router.addRoutes(permRoutes)
+    //       frameInRoutes[0]['children'] = [...frameInRoutes[0]['children'], ...permRoutes]
+    //       // 处理路由 得到每一级的路由设置，用于多页面的标签
+    //       store.commit('d2admin/page/init', frameInRoutes)
+    //     }
+    //   )
+    //   .catch(err => {
+    //     console.log('err: ', err)
+    //   })
+
+    const token = util.cookies.get('token')
+    $.ajax({
       url: SERVER.server + '/users/list_user_router/v1/',
-      method: 'post',
-    })
-      .then(res => {
-          // console.log(res.router)
-          let permRoutes = res.router
+      type: 'POST',
+      async: false,
+      contentType: "application/json; charset=utf-8",
+      headers: {
+        'Authorization': 'Token ' + token
+      },
+      success(res) {
+        if (res.code == '0') {
+          // console.log(res.data.router)
+          let permRoutes = res.data.router
           formatRoutes(permRoutes)
-          let redirect_404 = {path: '*', redirect: '/404', hidden: true}
-          permRoutes.push(redirect_404)
+          // let errorPage = {
+          //   path: '/404',
+          //   name: '404',
+          //   component: _import('system/error/404')
+          // }
+          // permRoutes.push(errorPage)
           permRoutes = [
             {
               path: '/',
@@ -41,14 +78,23 @@ routes.init = function (router) {
             }
           ]
           router.addRoutes(permRoutes)
-          frameInRoutes[0]['children'] = [...frameInRoutes[0]['children'], ...permRoutes]
+          console.log('11111')
           // 处理路由 得到每一级的路由设置，用于多页面的标签
+          frameInRoutes[0]['children'] = [...frameInRoutes[0]['children'], ...permRoutes]
           store.commit('d2admin/page/init', frameInRoutes)
+        } else {
+          console.log(res.msg)
         }
-      )
-      .catch(err => {
-        console.log('err: ', err)
-      })
+      },
+      error(xhr, status, errors) {
+        if (xhr.status == '403') {
+          console.log('权限拒绝');
+        } else {
+          console.log(errors);
+        }
+      }
+    })
+
   }
 }
 

@@ -25,8 +25,10 @@ Vue.use(VueRouter)
 
 // 导出路由 在 main.js 里使用
 const router = new VueRouter({
-  routes
+  routes,
+  mode: 'history'
 })
+
 
 /**
  * 路由拦截
@@ -64,6 +66,8 @@ router.beforeEach(async (to, from, next) => {
     // 不需要身份校验 直接通过
     next()
   }
+
+
 })
 
 router.afterEach(to => {

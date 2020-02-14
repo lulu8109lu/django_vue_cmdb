@@ -22,15 +22,17 @@ import util from '@/libs/util.js'
 // 核心插件
 Vue.use(d2Admin)
 
+// 从后台获取动态路由
+util.router.init(router)
+
 new Vue({
   router,
   store,
   i18n,
   render: h => h(App),
-  created() {
+  created () {
     // 处理路由 得到每一级的路由设置
     // this.$store.commit('d2admin/page/init', frameInRoutes)
-    util.router.init(router)
     // 设置顶栏菜单
     this.$store.commit('d2admin/menu/headerSet', menuHeader)
     // 设置侧边栏菜单，改为从后台获取
@@ -40,7 +42,7 @@ new Vue({
     // this.$store.commit('d2admin/search/init', menuHeader)
     this.$store.commit('d2admin/search/init', menuAside)
   },
-  mounted() {
+  mounted () {
     // 展示系统信息
     this.$store.commit('d2admin/releases/versionShow')
     // 用户登录后从数据库加载一系列的设置

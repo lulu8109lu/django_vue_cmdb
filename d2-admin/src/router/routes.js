@@ -679,7 +679,7 @@ const frameOut = [
  */
 const errorPage = [
   {
-    path: '/404',
+    path: '*',
     name: '404',
     component: _import('system/error/404')
   }
@@ -692,5 +692,5 @@ export const frameInRoutes = frameIn
 export default [
   ...frameIn,
   ...frameOut,
-  ...errorPage
+  // ...errorPage
 ]
