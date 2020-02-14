@@ -2,12 +2,14 @@ import cookies from './util.cookies'
 import db from './util.db'
 import log from './util.log'
 import menu from './util.menu.init'
+import router from './util.router.init'
 
 const util = {
   cookies,
   db,
   log,
-  menu
+  menu,
+  router
 }
 
 /**

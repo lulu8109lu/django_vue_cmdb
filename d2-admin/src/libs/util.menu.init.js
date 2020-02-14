@@ -2,6 +2,7 @@ import request from '@/plugin/axios'
 import SERVER from '@/server'
 import util from '@/libs/util.js'
 import store from '@/store/index'
+import menuAside from '@/menu/aside'
 
 const menu = {}
 
@@ -14,7 +15,8 @@ menu.init = function () {
     })
       .then(async res => {
         // console.log(res.menu)
-        store.commit('d2admin/menu/asideSet', res.menu)
+        let allMenu = [...menuAside, ...res.menu]
+        store.commit('d2admin/menu/asideSet', allMenu)
       })
       .catch(err => {
         console.log('err: ', err)

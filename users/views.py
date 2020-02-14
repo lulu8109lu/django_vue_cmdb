@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from users.utils import get_cookie
 from users.utils import get_captcha
 from users.utils import get_user_menu
+from users.utils import get_user_router
 from users.exceptions import *
 from django.core.cache import cache
 from io import BytesIO
@@ -28,7 +29,9 @@ def user_login(request, version):
                 'password': '',
                 'name': '',
                 'token': '',
-                'uuid': ''
+                'uuid': '',
+                'menu': '',
+                'router': ''
             }
         }
         try:
@@ -58,15 +61,17 @@ def user_login(request, version):
                     token_obj.update(**{'key': rand_token, 'created': datetime.datetime.now()})
                 else:
                     Token.objects.create(user=user, key=rand_token)
-                # 获取登录用户有权限访问的菜单
+                # 获取登录用户有权限访问的菜单和路由
                 menu = get_user_menu(user)
+                router = get_user_router(user)
 
                 data = {
                     'username': username,
                     'name': username,
                     'token': rand_token,
                     'uuid': str(uuid.uuid4()),
-                    'menu': menu
+                    'menu': menu,
+                    'router': router
                 }
                 result['data'] = data
             else:
@@ -122,6 +127,34 @@ class ListUserMenu(APIView):
             user = request.user
             menu = get_user_menu(user)
             result['data']['menu'] = menu
+
+        except Exception as e:
+            result = {
+                'code': 500,
+                'msg': str(e),
+                'data': {}
+            }
+        finally:
+            return JsonResponse(result)
+
+
+class ListUserRouter(APIView):
+    """用户有权限访问的路由数据"""
+    authentication_classes = (ExpireTokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, version):
+        result = {
+            'code': 0,
+            'msg': '请求成功',
+            'data': {
+                'router': '',
+            }
+        }
+        try:
+            user = request.user
+            router = get_user_router(user)
+            result['data']['router'] = router
 
         except Exception as e:
             result = {

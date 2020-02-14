@@ -9,7 +9,7 @@
 </template>
 
 <script>
-const linkD2Admin = 'https://github.com/d2-projects/d2-admin'
+const linkD2Admin = 'https://github.com/CJFJack/django_vue_cmdb'
 export default {
   data () {
     return {

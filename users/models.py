@@ -5,11 +5,11 @@ from django.contrib.auth.models import Permission
 class UserMenu(models.Model):
     """用户菜单"""
     index = models.IntegerField(default=999, verbose_name=u'菜单索引', help_text=u'决定菜单显示顺序')
-    path = models.CharField(max_length=20, null=True, blank=True, verbose_name=u'路径')
-    title = models.CharField(max_length=20, verbose_name=u'名称')
-    icon = models.CharField(max_length=10, null=True, blank=True, verbose_name=u'图标')
+    path = models.CharField(max_length=50, null=True, blank=True, verbose_name=u'菜单路径')
+    title = models.CharField(max_length=20, verbose_name=u'菜单名称')
+    icon = models.CharField(max_length=10, null=True, blank=True, verbose_name=u'菜单图标')
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='children', verbose_name=u'父级菜单')
-    permission = models.ForeignKey(Permission, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=u'关联权限')
+    permission = models.ForeignKey(Permission, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=u'菜单关联权限')
 
     class Meta:
         db_table = 'users_menu'
@@ -78,3 +78,33 @@ class UserMenu(models.Model):
             parent_nodes.add(self.parent)
             return self._get_all_parents(self.parent, parent_nodes)
         return parent_nodes
+
+
+class UserRouter(models.Model):
+    """用户路由"""
+    path = models.CharField(max_length=50, verbose_name=u'路由路径')
+    name = models.CharField(max_length=30, verbose_name=u'路由英文名称')
+    title = models.CharField(max_length=30, verbose_name=u'路由中文标题')
+    auth = models.BooleanField(default=True, verbose_name=u'是否需要验证')
+    component = models.CharField(max_length=50, verbose_name=u'路由关联的页面组件')
+    permission = models.ForeignKey(Permission, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=u'路由关联权限')
+
+    class Meta:
+        db_table = 'users_router'
+        verbose_name = u'用户路由'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.title
+
+    def get_vue_router_dict(self):
+        """组装vue路由字典"""
+        return {
+            'path': self.path,
+            'name': self.name,
+            'meta': {
+                'title': self.title,
+                'auth': self.auth
+            },
+            'component': self.component
+        }

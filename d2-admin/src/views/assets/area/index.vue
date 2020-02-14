@@ -59,11 +59,11 @@
     name: "Area",
     data() {
       return {
-        tableFilter: {   // 筛选表单字典数据
+        tableFilter: {   // 表格字段筛选字典数据
           wholeSearch: '',  // 全局搜索
         },
         nameEnSelectValue: '',   // 英文简称筛选值
-        nameEnOptions: [],
+        nameEnOptions: [],       // 英文简称选择框选择项
         columns: [],  // 表头
         data: [],     // 数据
         options: {

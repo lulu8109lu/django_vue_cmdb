@@ -1,6 +1,7 @@
 from captcha.image import ImageCaptcha
 from random import randint
 from users.models import UserMenu
+from users.models import UserRouter
 import hashlib
 import time
 import random
@@ -51,22 +52,25 @@ def compose_menu_dict(root_menu, all_parent_menu_objs):
         return vue_menu
 
 
+def get_user_all_perm(user):
+    """获取用户所有关联的权限，包括关联组的权限和个人关联的权限"""
+    user_permissions = [user_perm for user_perm in user.user_permissions.all()]
+    group_permission = []
+    for group in user.groups.all():
+        group_permission.extend([group_perm for group_perm in group.permissions.all()])
+    return user_permissions + group_permission
+
+
 def get_user_menu(user):
     """获取用户有权限访问的菜单"""
     if user.is_superuser:
         menu_objs = [menu for menu in UserMenu.objects.all() if menu.is_leaf_menu()]
     else:
         # 获取用户所有权限
-        user_permissions = [user_perm for user_perm in user.user_permissions.all()]
-        group_permission = []
-        for group in user.groups.all():
-            group_permission.extend([group_perm for group_perm in group.permissions.all()])
-        all_permissions = user_permissions + group_permission
-        # 筛选出带menu的权限，标识进入菜单的权限
-        menu_perms = [perm for perm in all_permissions if 'menu' in perm.codename]
-        # 获取所有权限对应的叶子菜单
+        all_permissions = get_user_all_perm(user)
+        # 获取所有权限关联的叶子菜单
         menu_objs = []
-        for perm in menu_perms:
+        for perm in all_permissions:
             for menu in perm.usermenu_set.all():
                 menu_objs.append(menu)
     # 获取构建树状菜单需要的所有菜单节点
@@ -75,6 +79,21 @@ def get_user_menu(user):
         all_parent_menu_objs = all_parent_menu_objs.union(menu.get_all_parent_nodes(own=True))
     # 获取所有根节点菜单
     root_menu_objs = list(set([menu.get_root_node() for menu in menu_objs]))
-    # 构建完整树状菜单
+    # 构建完整树状菜单，传入all_parent_menu_objs的目的是为了过滤掉用户没有权限看到的菜单节点
     menu_list = [compose_menu_dict(root_menu, all_parent_menu_objs) for root_menu in root_menu_objs]
     return sorted(menu_list, key=lambda x: x['index'])
+
+
+def get_user_router(user):
+    """获取用户路由"""
+    if user.is_superuser:
+        return [router.get_vue_router_dict() for router in UserRouter.objects.all()]
+    else:
+        # 获取用户所有权限
+        all_permissions = get_user_all_perm(user)
+        # 获取所有权限关联的路由
+        router_objs = []
+        for perm in all_permissions:
+            for router in perm.userrouter_set.all():
+                router_objs.append(router)
+        return [router.get_vue_router_dict() for router in router_objs]

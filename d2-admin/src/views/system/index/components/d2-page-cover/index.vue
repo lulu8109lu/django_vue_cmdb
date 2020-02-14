@@ -7,7 +7,7 @@
     <p class="d2-page-cover__sub-title">欢迎使用CMDB系统</p>
     <p class="d2-page-cover__build-time">FINAL BUILD TIME {{$buildTime}}</p>
     <slot name="footer"/>
-    <a target="blank" href="https://github.com/CJFJack/django_vue">
+    <a target="blank" href="https://github.com/CJFJack/django_vue_cmdb">
       <img
         style="position: absolute; top: 0; right: 0; border: 0; width: 150px;"
         src="./image/darkblue@2x.png"

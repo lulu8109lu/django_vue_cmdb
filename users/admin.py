@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 from users.models import UserMenu
+from users.models import UserRouter
 
 
 class PermissionAdmin(admin.ModelAdmin):
@@ -19,5 +20,14 @@ class UserMenuAdmin(admin.ModelAdmin):
     list_display_links = ('title',)
 
 
+class UserRouterAdmin(admin.ModelAdmin):
+    fields = ['path', 'name', 'title', 'auth', 'component', 'permission']
+    list_display = ['path', 'name', 'title', 'auth', 'component', 'permission']
+    list_per_page = 20
+    search_fields = ('path', 'title', 'name')
+    list_display_links = ('title',)
+
+
 admin.site.register(Permission, PermissionAdmin)
 admin.site.register(UserMenu, UserMenuAdmin)
+admin.site.register(UserRouter, UserRouterAdmin)
