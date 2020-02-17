@@ -37,6 +37,7 @@ def get_captcha():
 
 
 def compose_menu_dict(root_menu, all_parent_menu_objs):
+    """递归组装菜单字典"""
     if not root_menu.children:
         return root_menu.get_vue_menu()
     else:

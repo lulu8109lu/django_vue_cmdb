@@ -11,6 +11,7 @@ import store from '@/store/index'
 const _import = require('@/libs/util.import.' + process.env.NODE_ENV)
 
 
+// 格式化后端返回的路由数据
 const formatRoutes = function (routes) {
   routes.forEach(route => {
     route.component = _import(route.component)

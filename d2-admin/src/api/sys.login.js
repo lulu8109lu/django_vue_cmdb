@@ -1,9 +1,9 @@
 import request from '@/plugin/axios'
-import SERVER from '@/server'
 
 export function AccountLogin (data) {
+  // console.log(process.env)
   return request({
-    url: SERVER.server + '/users/login/v1/',
+    url: process.env.VUE_APP_BASE_API + '/users/login/v1/',
     // url: '/login',
     method: 'post',
     data,
