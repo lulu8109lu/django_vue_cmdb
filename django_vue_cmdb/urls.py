@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^assets/', include('assets.urls')),
+    url(r'^workflows/', include('workflows.urls')),
     url(r'', TemplateView.as_view(template_name='index.html')),
 ]
